@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning Task 6.1 – Bishop SVG Text Art</title>
+<style>
+  body { margin: 0; background: #fff; display: flex; justify-content: center; }
+  svg { max-width: 100%; height: auto; display: block; }
+  text { font-family: Georgia, "Times New Roman", serif; fill: #000; }
+</style>
+</head>
+<body>
+<svg id="art" width="900" height="780" viewBox="0 0 900 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A chess bishop made of calm words such as silent, calm, composed and patient">
+  <defs>
+    <!-- the bishop body, built by combining paths and shapes -->
+    <clipPath id="bishop">
+      <path d="M450 100 C520 155 572 225 562 292 C558 320 542 330 522 336 L378 336 C358 330 342 320 338 292 C328 225 380 155 450 100 Z"/>
+      <rect x="358" y="334" width="184" height="40" rx="20"/>
+      <path d="M392 372 C402 440 414 482 360 562 L540 562 C486 482 498 440 508 372 Z"/>
+      <rect x="326" y="556" width="248" height="48" rx="24"/>
+      <rect x="250" y="598" width="400" height="116" rx="30"/>
+    </clipPath>
+    <path id="ball" d="M426 72 a24 24 0 1 1 48 0 a24 24 0 1 1 -48 0"/>
+  </defs>
+
+  <rect width="900" height="780" fill="#fff"/>
+
+  <!-- finial: words wrapped around a circular path -->
+  <circle cx="450" cy="72" r="30" fill="#000"/>
+  <text font-size="10" letter-spacing="1" style="fill:#fff">
+    <textPath href="#ball">silent calm composed patient still quiet</textPath>
+  </text>
+
+  <!-- bishop silhouette: filled with rows of calm words -->
+  <g id="rows" clip-path="url(#bishop)"></g>
+
+  <!-- the mitre's slit -->
+  <path d="M512 138 L442 214" stroke="#fff" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+  <!-- large key words -->
+  <g id="words" text-anchor="middle" font-weight="bold"></g>
+</svg>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var list = ["silent", "calm", "composed", "patient", "still", "quiet", "steady", "poised",
+              "serene", "measured", "unhurried", "watchful", "restrained", "grounded",
+              "tranquil", "deliberate", "settled", "gentle", "thoughtful", "unshaken"];
+  var V = list.join("  ") + "  ";
+
+  // key words: [text, baseline y, size]
+  var big = [
+    ["silent", 236, 54],
+    ["calm", 302, 50],
+    ["still", 364, 22],
+    ["composed", 468, 36],
+    ["patient", 536, 36],
+    ["serene", 650, 46]
+  ];
+
+  var rows = document.getElementById("rows");
+  var words = document.getElementById("words");
+  var i = 0;
+  for (var y = 118; y < 712; y += 16) {
+    var skip = big.some(function (b) { return y > b[1] - b[2] * 0.85 && y < b[1] + 8; });
+    if (skip) continue;
+    var t = document.createElementNS(NS, "text");
+    var off = (i * 23) % V.length;
+    t.textContent = (V.slice(off) + V + V + V).slice(0, 90);
+    t.setAttribute("x", 230);
+    t.setAttribute("y", y);
+    t.setAttribute("font-size", 12 + (i % 3) * 1.5);
+    t.setAttribute("font-style", i % 2 ? "italic" : "normal");
+    rows.appendChild(t);
+    i++;
+  }
+
+  big.forEach(function (b) {
+    var t = document.createElementNS(NS, "text");
+    t.textContent = b[0];
+    t.setAttribute("x", 450);
+    t.setAttribute("y", b[1]);
+    t.setAttribute("font-size", b[2]);
+    words.appendChild(t);
+  });
+
+  // thin outline so the silhouette reads clearly as a bishop
+  document.querySelectorAll("#bishop > *").forEach(function (s) {
+    var c = s.cloneNode(true);
+    c.setAttribute("fill", "none");
+    c.setAttribute("stroke", "#000");
+    c.setAttribute("stroke-width", "2");
+    document.getElementById("art").insertBefore(c, words);
+  });
+})();
+</script>
+</body>
+</html>
